@@ -7,7 +7,7 @@
 ***
 ## <읽고 있는 도서>
 ##### 읽으면서 정리도 같이 해보자
-* [문제로 풀어보는 알고리즘(프로그래밍 트레이닝 Q&A)](https://github.com/seungrokoh/Books/ProgramingTraning/)
+* [문제로 풀어보는 알고리즘(프로그래밍 트레이닝 Q&A)](https://github.com/seungrokoh/TIL/tree/master/Books/ProgrammingTraning)
 
 ## <읽어야 할 도서>
 ##### 구매는 했지만 아직 읽지 못한 도서들
