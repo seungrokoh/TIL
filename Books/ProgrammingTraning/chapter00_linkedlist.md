@@ -55,4 +55,37 @@ int delete_node(){
 }
 ```
 
-배열로 queue를 구성하였을 때에는 배열의 크기에 따라 입력할 수 있는 대기열의 개수가 제한된다는 문제가 있었다.`(물론 배열의 크기를 계속해서 늘려도 된다.)` 하지만 연결리스트로 구성한 queue의 경우 대기열의 개수를 무한정으로 늘릴 수 있다는 장점이 있다.`(메모리가 무한정이라는 가정)`
+배열로 queue를 구성하였을 때에는 배열의 크기에 따라 입력할 수 있는 대기열의 개수가 제한된다는 문제가 있었다.`(물론 배열의 크기를 계속해서 늘려도 된다.)` 하지만 연결리스트로 구성한 queue의 경우 대기열의 개수를 무한정으로 늘릴 수 있다는 장점이 있다.`(메모리가 무한정이라는 가정)`  
+
+### __ Q1 생각해보기 : k번째 위치에 대기번호 끼워 넣기__
+
+책의 가정대로 대기번호를 구현한다고 했을 때, 우선권을 가진 사람이 k번째 위치에 새치기를 할 수 있다고 가정해보자. 그렇다면 `연결리스트`의 `k번째 위치`에 노드를 삽입하는 함수가 필요하다. 새치기 함수인 `cutInList(int k, int n)`를 구현해보자.
+
+```c
+void cutInList(int k, int n){
+    //새치기 함수
+    //k번째 위치에 데이터n 삽입
+    int count = 1;
+    node_t *cutInNode = (node_t *) malloc(sizeof(node_t));  //새로운 노드가 저장될 노드
+    node_t *preNode;    // k-1번째 노드
+    node_t *temp;       // 삽입할 때 필요한 임시 변수
+
+    preNode = head;
+    cutInNode->key = n;
+
+    if (k == 1) {   //연결리스트의 가장 첫 번째에 저장 할 경우
+        cutInNode->next = head;
+        head = cutInNode;
+        return;
+    } else {
+        k--;    //k-1번째 원소까지만
+        while (count < k) {
+            preNode = preNode->next;
+            count++;
+        }
+        temp = preNode->next;
+        preNode->next = cutInNode;
+        cutInNode->next = temp;
+    }
+}
+```
