@@ -1,4 +1,4 @@
-# __DataStructure__
+# __Java__
 
 **:book: contents**
 * 객체지향 프로그래밍이란(OOP)
