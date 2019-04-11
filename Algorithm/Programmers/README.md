@@ -20,4 +20,7 @@ Programmers 문제를 풀고 정리하는 공간입니다.
 :heavy_exclamation_mark: __나누어 떨어지는 숫자 배열__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/12910?language=java)
 * :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/12910.md)
 
+:heavy_exclamation_mark: __이상한 문자 만들기__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/12930?language=java)
+* :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/12930.md)
+
 ### __Level :two:__
