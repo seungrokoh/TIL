@@ -275,3 +275,185 @@ class MainActivity : AppCompatActivity() {
     println(lateInitName)
 }
 ```
+
+# __:seedling: Class__
+
+### :pushpin: 클래스 선언 Java vs Kotlin
+
+```kotlin
+// Java
+class 클래스이름 {
+    // 생성자
+    클래스이름(변수) {}
+}
+
+// Kotlin
+class 클래스이름 constructor(변수) { }
+
+// constructor 생략 가능
+class 클래스이름(변수){ }
+```
+
+### :pushpin: 다중생성자 Java vs Kotlin
+
+##### java code
+```java
+class Sample {
+    private String name;
+    private int age;
+
+    Sample(String name) {
+        this.name = name;
+    }
+    Sample(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+
+```
+##### kotlin code
+```kotlin
+// primary constuctor - constructor 생략 가능
+class Sample constructor (val name: String, val age: Int) {
+
+    // secondary constructor - 생략불가
+    // 항상 this에 값을 넘겨 줘야함
+    constuctor(name: String) : this(name, 0)
+}
+```
+### :pushpin: Default 생성자
+
+```kotlin
+class Sample(val name: String, val age: Int = 0)
+```
+Sample 클래스를 호출할 때 name과 age 모두를 호출할 수 있는 오버로딩 형태로 호출이 된다. Java에서는 존재하지 않는 개념이지만 아주 좋다. 바로 위의 kotlin코드에서 __secondary constructor를 만들지 않아도 자동으로 생성해준다.__
+
+##### :zap: __사용방법__
+```kotlin
+// name = name, age = 0
+Sample("name")
+// name = kotlin, age = 20
+Sample("kotlin", 20)
+```
+__Default 생성자는 위치에 상관 없이 사용이 가능하다.__ 만약 __class Sample(val name: String = "name", val age: Int)__ 로 구현이 되어 있으면 어떻게 활용해야 할까??
+
+```kotlin
+// name은 default로 하고 age만 설정하고 싶을 때 - 오류 발생
+Sample(0)
+```
+parameter는 순서를 따르므로 0을 대입했을 때 첫 번째 순서인 name에 대입되기 때문에 형이 맞지 않아 오류가 발생하게 된다. 따라서 __age만 설정하고 싶다면 명시적으로 age를 명시해주고 대입하면 된다.__
+
+```kotlin
+Sample(age = 0)
+```
+
+### :pushpin: init(초기화)
+
+##### java code
+```java
+class Sample {
+    private String name;
+    private int age;
+
+    Sample(String name) {
+        this.name = name;
+        Log.d("TEMP", "name " + name + "age " + age);
+    }
+    Sample(String name, int age) {
+        this(name);
+        this.age = age;
+        Log.d("TEMP", "name " + name + "age " + age);
+    }
+}
+```
+##### kotlin code
+```kotlin
+class Sample(val name: String, val age: Int = 0) {
+    init {
+        println("name : $name, age : $age")
+    }
+}
+```
+
+### :pushpin: 클래스 상속
+
+클래스를 상속할 때 __extends__ 를 사용하지 않고 __:__ 으로 간단하게 상속할 수 있다.
+##### java code
+```java
+public abstract class Base {
+    public Base(int age) {
+
+    }
+}
+
+// 추상 클래스의 상속을 다음과 같이 사용
+public class UseBase extends Base {
+    public UseBase(int age) {
+        super(age);
+    }
+}
+```
+##### kotlin code
+```kotlin
+abstract class Base(age: Int)
+
+// 추상 클래스를 다음과 같이 사용
+class UseBase(age: Int) : Base(age)
+```
+
+__Interface 상속__
+
+##### java code
+```java
+interface Base {
+    String getName();
+}
+
+// 추상 클래스를 다음과 같이 사용
+class UseBase implements Base {
+    @override
+    public String getName() {
+        return "name";
+    }
+}
+```
+
+##### kotlin code
+```kotlin
+interface Base {
+    fun getName(): String
+}
+
+// 추상 클래스를 다음과 같이 사용
+class UseBase : Base {
+    override fun getName() = "name"
+}
+```
+
+### __:pushpin: class open__
+
+kotlin은 abstract/interface을 __제외한 모든 클래스는 final이다.__ 따라서 확장이 불가능하다. 만약 클래스를 확장 가능하게 하기 위해서는 __open__ 키워드를 사용해야 한다.
+
+##### __상속 불가능__
+```kotlin
+class Customer (age: Int) : AbstractBase(age), InterfaceBase {
+    ...
+}
+
+// 상속이 불가능하다.
+class User(age: Int) : Customer(age) {
+
+}
+```
+##### __상속 가능__
+```kotlin
+open class Customer (age: Int) : AbstractBase(age), InterfaceBase {
+    ...
+}
+
+// 상속이 가능하다.
+class User(age: Int) : Customer(age) {
+
+}
+```

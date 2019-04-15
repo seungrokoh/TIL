@@ -25,3 +25,10 @@ __:notebook: contents__
     - Getters & Setters
     - private 변수 만들기
     - 늦은 초기화(lazy & lateinit)
+
+* Class
+    - 클래스 선언
+    - 생성자
+    - init(초기화)
+    - 상속
+    - open keyword
