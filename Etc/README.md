@@ -12,3 +12,4 @@ __:notebook: contents__
 ### __:seedling: Git__ [[원문 보기]](https://github.com/seungrokoh/TIL/tree/master/Etc/contents/Git.md)
 
 * 이미 push 된 파일 `.gitignore` 적용하기
+* 특정 브랜치 clone
