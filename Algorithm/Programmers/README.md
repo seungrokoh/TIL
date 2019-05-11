@@ -27,3 +27,8 @@ Programmers 문제를 풀고 정리하는 공간입니다.
 
 :heavy_exclamation_mark: __스킬 트리__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49993?language=java)
 * :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49993.md)
+
+### __Level :three:__
+
+:heavy_exclamation_mark: __방문 길이__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java)
+* :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
