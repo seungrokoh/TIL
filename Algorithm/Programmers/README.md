@@ -23,6 +23,8 @@ __스킬 트리__  [문제보기](https://programmers.co.kr/learn/courses/30/les
 
 __프린터__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42587) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42587.md)
 
+__주식가격__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42584) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42584.md)
+
 ### __Level :three:__
 
 __방문 길이__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
