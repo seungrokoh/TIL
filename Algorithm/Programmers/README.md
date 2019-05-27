@@ -25,6 +25,8 @@ __프린터__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons
 
 __주식가격__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42584) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42584.md)
 
+__탑__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42588) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42588.md)
+
 ### __Level :three:__
 
 __방문 길이__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
