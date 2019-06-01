@@ -39,6 +39,8 @@ __더 맵게__  [문제보기](https://programmers.co.kr/learn/courses/30/lesson
 
 __H-Index__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42747) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42747.md)
 
+__전화번호 목록__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42577) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42577.md)
+
 ### __Level :three:__
 
 __방문 길이__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
