@@ -43,6 +43,8 @@ __전화번호 목록__  [문제보기](https://programmers.co.kr/learn/courses/
 
 __가장 큰 수__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42746) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42746.md)
 
+__위장__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/42578) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/42578.md)
+
 ### __Level :three:__
 
 __방문 길이__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
@@ -53,4 +55,4 @@ __Solution02 (올바른 괄호쌍)__ :link:[풀이보기](https://github.com/seu
 
 ### __(2017년)KAKAO BLIND RECRUITMENT__
 
-__비밀지도__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/49994?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/49994.md)
+__비밀지도__  [문제보기](https://programmers.co.kr/learn/courses/30/lessons/17681?language=java) :link:[풀이보기](https://github.com/seungrokoh/TIL/blob/master/Algorithm/Programmers/contents/17681.md)
