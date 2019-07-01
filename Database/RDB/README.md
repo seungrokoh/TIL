@@ -39,6 +39,7 @@ __원하는 결과물을 기획하기__
 3. 표 안에 표가 내포되어 있는 관계는 허용하지 않는다.
 
 __[표 1. 거대 단일 테이블]__
+
 |글 제목|글 내용|글 저자 이름|글 저자 소개|글 저자 가입일|댓글 내용|댓글 저자|댓글 저자 소개|댓글 저자 가입일|
 |---|---|---|---|---|---|---|---|---|
 |글 1 제목|글 1 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|댓글 1 내용|<div style="background:yellow;">저자 1 이름|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|
