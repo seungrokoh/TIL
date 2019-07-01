@@ -41,10 +41,10 @@ __원하는 결과물을 기획하기__
 __[표 1. 거대 단일 테이블]__
 
 |글 제목|글 내용|글 저자 이름|글 저자 소개|글 저자 가입일|댓글 내용|댓글 저자|댓글 저자 소개|댓글 저자 가입일|
-|---|---|---|---|---|---|---|---|---|
-|글 1 제목|글 1 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|댓글 1 내용|<div style="background:yellow;">저자 1 이름|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|
-|글 2 제목|글 2 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|댓글 2 내용|<div style="background:yellow;">저자 1 이름|<div style="background:yellow;">저자 1 소개|<div style="background:yellow;">저자 1 가입일|
-|글 3 제목|글 3 내용|<div style="background:green;">저자 2 이름</span>|<div style="background:green;">저자 2 소개|<div style="background:green;">저자 2 가입일|댓글 3 내용|<div style="background:#20a4e6;">저자 3 이름|<div style="background:#20a4e6;">저자 3 소개|<div style="background:#20a4e6;">저자 3 가입일|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|글 1 제목|글 1 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개</span>|<div style="background:yellow;">저자 1 가입일</span>|댓글 1 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개</span>|<div style="background:yellow;">저자 1 가입일</span>|
+|글 2 제목|글 2 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개</span>|<div style="background:yellow;">저자 1 가입일</span>|댓글 2 내용|<div style="background:yellow;">저자 1 이름</span>|<div style="background:yellow;">저자 1 소개</span>|<div style="background:yellow;">저자 1 가입일</span>|
+|글 3 제목|글 3 내용|<div style="background:green;">저자 2 이름</span>|<div style="background:green;">저자 2 소개</span>|<div style="background:green;">저자 2 가입일</span>|댓글 3 내용|<div style="background:#20a4e6;">저자 3 이름</span>|<div style="background:#20a4e6;">저자 3 소개</span>|<div style="background:#20a4e6;">저자 3 가입일</span>|
 
 **표 1**과 같이 하나의 표 안에 모든 정보를 다 담을 수도 있다. 즉 여러개의 컬럼(Column)을 가진 표를 만들 수 있다. **하지만** 극단적으로 1천개의 컬럼이 필요한 표를 만들었을 때 불필요한 정보를 불러올 수 있다. 또한 1억개의 데이터가 있다면 **데이터의 중복이 발생**하게 된다. 즉, **거대 단일 테이블로 표현하면 데이터를 다룰 때 효율이 떨어지고 중복이 발생한다.** 이러한 중복을 최소화 하기 위해 아래와 같이 표를 나눈다.
 
@@ -81,11 +81,12 @@ __[표 4. 댓글 테이블]__
 **FROM** 댓글 **LEFT JOIN** 저자 **ON** 댓글.저자 아이디 = 저자.아이디
 
 __[표 5. Join 결과]__
+
 |댓글 내용|댓글 작성일|저자|저자 소개|
 |:---:|:---:|:---:|:---:|
-|댓글 1 내용|댓글 1 작성일|<div style="background:green;">저자 1 이름|<div style="background:green;">저자 1 자기소개|
-|댓글 2 내용|댓글 2 작성일|<div style="background:green;">저자 1 이름|<div style="background:green;">저자 1 자기소개|
-|댓글 3 내용|댓글 3 작성일|<div style="background:green;">저자 1 이름|<div style="background:green;">저자 1 자기소개|
+|댓글 1 내용|댓글 1 작성일|<div style="background:green;">저자 1 이름</span>|<div style="background:green;">저자 1 자기소개</span>|
+|댓글 2 내용|댓글 2 작성일|<div style="background:green;">저자 1 이름</span>|<div style="background:green;">저자 1 자기소개</span>|
+|댓글 3 내용|댓글 3 작성일|<div style="background:green;">저자 1 이름</span>|<div style="background:green;">저자 1 자기소개</span>|
 
 > 포함적인 관계가 아닌 평면적인 관계로 개념을 뽑아낸다.
 
