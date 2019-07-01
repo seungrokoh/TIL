@@ -108,6 +108,61 @@ Entity를 Directory라고 생각하고 Attribute를 File이라고 한다면  Ent
     글 --- <소속> --- 댓글
     저자 --- <쓰다> --- 댓글
 
+***
+## **Entity 정의**
+**읽기**에서는 Entity를 찾기가 힘들고 **쓰기**에서는 대체적으로 찾기 쉽다. 즉, 예제에서 살펴보면 **저자등록, 글 작성, 댓글 작성** 등이 쓰기에 해당한다.
+
+__@TODO__
+__ER-Diagram 그려보기__
+[draw.io](https://www.draw.io)를 이용해 ER-Dialgram 그려보기
+
+## **각 Entity에서 속성 뽑아내기**
+* 글 - 제목, 작성일, 본문
+* 저자 - 이름, 자기소개, 가입일
+* 댓글 - 본문, 작성일
+
+각 Entity의 속성들을 정의 했다면 식별자(Identifier)를 설정해줘야 한다. **식별자란 해당 Entity의 Raw를 나타내는 고유 속성**이며 추후 PrimaryKey가 된다.
+
+**식별자로 사용될 수 있는 Column**
+중복이 발생할 수 없는 속성(Column)을 식별자로 선정해야 한다.
+
+* 후보키(candidate key) - 식별자가 될 수 있는 key들
+* 기본키(primary key) - 후보키 중에서 선정한 식별자
+* 대체키(alternate key) - 기본키가 아닌 후보키들 (성능향상을 위해서 secondary index를 걸기 좋은 key)
+* 중복키(composite key) - 두개의 key를 합쳐 기본키로 설정함
+
+식별자를 선정하기 위해 각 Entity에 Primary Key가 될 수 있는 속성을 추가함.
+
+* 글 - **글 아이디(auto increasement)**, 제목, 작성일 본문
+* 저자 - **저자 아이디(auto increasement)**, 자기소개, 가입일
+* 댓글 - **댓글 아이디(auto increasement)**, 본문, 작성일
+
+***
+## **Relationship 정의**
+각 테이블들의 **PrimaryKey와 ForeignKey가 연결**되는 걸 통해서 실제로 구현이 된다.
+
+    PrimaryKey - 각 테이블의 Raw를 식별하는 유일무일한 식별자
+    ForeignKey - 다른 테이블의 PrimaryKey와 연결되어 있는 식별자
+
+### __Cardinality와 Optionality__
+
+**Cardinality**
+ERD에서 데이터베이스가 지켜야할 제약조건 중 연결(Connectivity)를 나타내는 것
+
+    일대일(One To On, 1:1) - X에 속하는 한 개체는 Y에 속하는 한 개체에만 연결되며, Y에 속하는 한 개체도 X에 속하는 한 개체에만 연결된다.(ex. 담임 - 반)
+    일대다(One To Many, 1:N) - X에 속하는 한 개체는 Y에 속하는 한 개체에만 연결되며, Y에 속하는 한 개체는 X에 속하는 여러 개체들과 연결된다. (ex. 저자 - 댓글)
+    다대다(Many To Many, N:N) - X에 속하는 한 개체는 Y에 속하는 여러 개체들과 연결될 수 있으며, Y에 속하는 한 개체도 X에 속하는 여러 개체들과 연결될 수 있다. (ex. 글 - 저자 (공동 저자))
+
+__Optionality__
+ERD에서 두 테이블간 필수관계(Mandatory)와 선택관계(Optional)를 나타내는 것
+
+    Ex) 저자 - 댓글간의 관계
+    저자의 관점 - 저자는 댓글을 작성하지 않을수도 있다.
+    댓글의 관점 - 각 댓글은 반드시 저자가 있다.
+
+    표현 (ㅁ - 테이블)
+    ㅁ--|-----O--ㅁ
+
 # __논리적 데이터 모델링__
 생각한 개념들을 관계형 데이터 베이스 패러다임에 맞는 표로 전환하는 작업
 
