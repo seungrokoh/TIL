@@ -114,9 +114,9 @@ Entity를 Directory라고 생각하고 Attribute를 File이라고 한다면  Ent
 ## **Entity 정의**
 **읽기**에서는 Entity를 찾기가 힘들고 **쓰기**에서는 대체적으로 찾기 쉽다. 즉, 예제에서 살펴보면 **저자등록, 글 작성, 댓글 작성** 등이 쓰기에 해당한다.
 
-__@TODO__
-__ER-Diagram 그려보기__
-[draw.io](https://www.draw.io)를 이용해 ER-Dialgram 그려보기
+__~~@TODO~~__
+__~~ER-Diagram 그려보기~~__
+~~[draw.io](https://www.draw.io)를 이용해 ER-Dialgram 그려보기~~
 
 ## **각 Entity에서 속성 뽑아내기**
 * 글 - 제목, 작성일, 본문
@@ -165,6 +165,8 @@ ERD에서 두 테이블간 필수관계(Mandatory)와 선택관계(Optional)를 
     표현 (ㅁ - 테이블)
     ㅁ--|-----O--ㅁ
 
+## __ER-Diagram__
+![ER-Diagram](./images/ER_Diagram.png)
 # __논리적 데이터 모델링__
 생각한 개념들을 관계형 데이터 베이스 패러다임에 맞는 표로 전환하는 작업
 
