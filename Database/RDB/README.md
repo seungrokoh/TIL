@@ -153,7 +153,7 @@ ERD에서 데이터베이스가 지켜야할 제약조건 중 연결(Connectivit
 
     일대일(One To On, 1:1) - X에 속하는 한 개체는 Y에 속하는 한 개체에만 연결되며, Y에 속하는 한 개체도 X에 속하는 한 개체에만 연결된다.(ex. 담임 - 반)
     일대다(One To Many, 1:N) - X에 속하는 한 개체는 Y에 속하는 한 개체에만 연결되며, Y에 속하는 한 개체는 X에 속하는 여러 개체들과 연결된다. (ex. 저자 - 댓글)
-    다대다(Many To Many, N:N) - X에 속하는 한 개체는 Y에 속하는 여러 개체들과 연결될 수 있으며, Y에 속하는 한 개체도 X에 속하는 여러 개체들과 연결될 수 있다. (ex. 글 - 저자 (공동 저자))
+    다대다(Many To Many, N:M) - X에 속하는 한 개체는 Y에 속하는 여러 개체들과 연결될 수 있으며, Y에 속하는 한 개체도 X에 속하는 여러 개체들과 연결될 수 있다. (ex. 글 - 저자 (공동 저자))
 
 __Optionality__
 ERD에서 두 테이블간 필수관계(Mandatory)와 선택관계(Optional)를 나타내는 것
@@ -167,8 +167,83 @@ ERD에서 두 테이블간 필수관계(Mandatory)와 선택관계(Optional)를 
 
 ## __ER-Diagram__
 ![ER-Diagram](./images/ER_Diagram.png)
+
 # __논리적 데이터 모델링__
 생각한 개념들을 관계형 데이터 베이스 패러다임에 맞는 표로 전환하는 작업
+
+## __Mapping Rule__
+ERD를 통해 표현한 내용을 관계형 데이터 베이스에 맞는 형식을로 전환할 때 사용하는 방법론
+
+    Entity -> Table
+    Attribute -> Column
+    Relation -> PK, FK
+
+@TODO ER Master 도구 사용해보기 (ermater.sourceforge.net)
+
+## __Relationship -> PK, FK__
+
+* __1:1 관계 (저자 - 휴면저자)__
+의존 관계에 따라 PK, FK를 따질 수 있음.  
+**저자는 휴면저자에 의존하지 않지만 휴면저자는 저자에 의존함.** 따라서 저자 테이블에 PK를 배치하고 휴면저자 테이블에 FK를 배치한다.  
+
+* __1:N 관계 (댓글 - 저자, 댓글 - 글)__
+1:N 관계에서는 N인 쪽이 FK를 가지면 된다.
+
+* __N:M 관계 (저자 - 글)__
+
+__예제__
+
+__:book: 저자 및 작성글 현황__
+
+| 저자 | 작성 글     |
+| :------------- | :------------- |
+| kim       | MySQL, SQL Server, ORACLE       |
+| lee       | MySQL, SQL Server       |
+
+__:seedling: author 테이블__
+
+| id | name | profile | created |
+|:---:|:---:|:---:|:---:|
+|1|kim|developer|2011|
+|2|lee|designer|2012|
+|3|park|planner|2013|
+
+__:seedling: topic 테이블__
+
+| id | title | description | created |
+|:---:|:---:|:---:|:---:|
+|1|MySQL ... |...|2011|
+|2|ORACLE ... |...|2012|
+|3|SQL Server ... |...|2013|
+
+위와 같은 **N : M 관계인 두 테이블에서** PK, FK를 설정해야한다. 만약 **topic에 author 정보를 적는다면 아래와 같이 만들어 진다.**
+
+__:seedling: author 정보를 기입한 topic 테이블__
+
+| id | title | description | created |author_id|
+|:---:|:---:|:---:|:---:|:---:|
+|1|MySQL ... |...|2011|1,2|
+|2|ORACLE ... |...|2012||
+|3|SQL Server ... |...|2013|1,2|
+
+**하지만** 이렇게 만드는 경우 **두 테이블간 JOIN을 할 수 없을 뿐더러 검색할 때 많은 제약사항이 생긴다.** author테이블에 topic정보를 기입할 때에도 마찬가지이다. **이를 해결하기 위해서 중재자인 Mapping Table을 따로 만든다.**
+
+## __Mapping Table__
+**author 테이블**과 **topic 테이블**의 사이를 이어주는 Mapping Table인 **Write 테이블**을 만든다.
+
+**:seedling: write 테이블 (Mapping Table)**
+
+|author_id|topic_id|created|
+|:---:|:---:|:---:|
+|1|1|...|
+|1|2|...|
+|1|3|...|
+|2|1|...|
+|2|3|...|
+
+Mapping Table을 작성하게 되면 두 테이블이 결합되었을 때 의미가 있는 정보 (ex. 각 저자가 언제 글을 수정하였는 가 등의 정보)를 알 수 있게 된다.
+
+@TODO ER Master 도구 사용해 N:M 관계까지 모두 그려보기
 
 # __물리적 데이터 모델링__
 어떤 데이터베이스를 사용할 것인지 생각하는 단계  
