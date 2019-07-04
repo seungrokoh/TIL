@@ -245,6 +245,75 @@ Mapping Table을 작성하게 되면 두 테이블이 결합되었을 때 의미
 
 @TODO ER Master 도구 사용해 N:M 관계까지 모두 그려보기
 
+## __정규화 (Normalization)__
+정제되지 않은 데이터(표)를 관계형 데이터 베이스에 어울리는 표로 만들어주는 레시피이다.
+
+### __예제__
+Unnormalized Form에서부터 제 1 정규화, 제 2 정규화, 제 3 정규화를 거쳐가면서 관계형 데이터베이스에 걸맞는 표로 만들어가기.
+
+__:seedling: Unnormalized Form__
+관계형 데이터베이스에 맞지 않는 상태
+
+|<U>title</U>|<U>type</U>|description|created|author_id|author_name|author_profile|price|tag|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|rdb, free|
+|MySQL|online|MySQL is ... |2011|1|kim|developer|0|rdb, free|
+|ORACLE|online|ORACLE is ... |2012|1|kim|developer|0|rdb, commercial|
+
+## __제 1 정규화(First Normal Form)__
+원칙 : **Atomic columns**  
+각 행의 컬럼 값들이 Atomic 해야한다. (각각의 컬럼이 하나의 값만을 가져야 한다.)
+
+> 만약 해당 컬럼이 여러개의 값을 가져도 된다면 정규화를 진행할 필요가 없다.
+
+__잘못된 제 1 정규화의 예__
+
+|<U>title</U>|<U>type</U>|description|created|author_id|author_name|author_profile|price|tag|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|rdb|
+|MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|free|
+
+제 1 정규화를 만족하지만 **데이터의 중복이 일어나고 있음.**
+
+|<U>title</U>|<U>type</U>|description|created|author_id|author_name|author_profile|price|tag1|tag2|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|rdb|free|
+
+제 1 정규화를 만족하지만 **만약 tag를 추가한다면 테이블 전체 구조를 변경하거나 낭비(null)가 생긴다.**
+
+> **제 1 정규화를 만족하면서 데이터를 효율적으로 다루기 위해 테이블을 쪼갠다.**
+
+__:seedling: 테이블 쪼개기__
+
+    Topic -N-------M- Tag (N : M 관계)
+    따라서 Mapping Table을 만들어야 함
+
+tag는 글의 type과는 관계 없이 **글의 제목(title)에만 의존하고 있다.** 따라서 **topic의 중복키 중 title만을 PK로 가져온다.** 또한 topic과 tag를 mapping하므로 tag의 id값을 가져와 Mapping Table의 PK를 만든다.
+
+__topic Table__
+
+|<U>title</U>|<U>type</U>|description|created|author_id|author_name|author_profile|price|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|
+
+__topic_tag_relation (Mapping Table)__
+
+|<U>topic_title</U>|<U>tag_id</U>|
+|:---:|:---:|
+|MySQL|1|
+|MySQL|2|
+|ORACLE|1|
+|ORACLE|3|
+
+__tag Table__
+
+|tag|name|
+|:---:|:---:|
+|1|rdb|
+|2|free|
+|3|commercial|
+
+
 # __물리적 데이터 모델링__
 어떤 데이터베이스를 사용할 것인지 생각하는 단계  
 표를 생성하는 SQL코드를 산출할 수 있다.
