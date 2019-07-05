@@ -295,6 +295,8 @@ __topic Table__
 |<U>title</U>|<U>type</U>|description|created|author_id|author_name|author_profile|price|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 |MySQL|paper|MySQL is ... |2011|1|kim|developer|10000|
+|MySQL|online|MySQL is ... |2011|1|kim|developer|0|
+|ORACLE|online|ORACLE is ... |2012|1|kim|developer|0|
 
 __topic_tag_relation (Mapping Table)__
 
@@ -313,6 +315,103 @@ __tag Table__
 |2|free|
 |3|commercial|
 
+## __제 2 정규화(Second Normal Form)__
+원칙 : No partial dependencies (부분 종속성이 없어야 한다.)
+
+> 테이블의 기본키가 중복키를 가지고 있다면 제 2 정규화를 진행하여야 한다.
+
+**제 1 정규화를 거친 topic 테이블**에서 discription, created, author_id, author_name, author_profile 컬럼이 중복이 일어나고 있다.
+
+위에서 명시한 컬럼들은 **title 컬럼에만 부분적으로 종속되고 있다.** topic 테이블은 type 컬럼이 paper, online에 따라 price가 달라진다. 즉, title, type, price를 위한 테이블이다.
+
+__:seedling: 제 2 정규화(부분 종속성 제거) 진행하기__
+제 1 정규화를 마친 topic 테이블을 제 2 정규화 진행해 부분 종속성 제거하기
+
+> 부분적으로 종속되는 컬럼들만 모으고 전체적으로 종속되는 컬럼을 따로 쪼갠다.
+
+__topic Table__
+
+|<U>title</U>|description|created|author_id|author_name|author_profile|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|MySQL|MySQL is ... |2011|1|kim|developer|
+|ORACLE|ORACLE is ... |2011|1|kim|developer|
+
+부분적으로 종속되는 컬럼들만 모음으로써 데이터의 중복을 제거한다.
+
+__topic_type Table__
+
+|title|type|price|
+|:---:|:---:|:---:|
+|MySQL|paper|10000|
+|MySQL|online|0|
+|ORACLE|online|0|
+
+전체적으로 종속되는 컬럼을 따로 쪼갠다.
+
+## __제 3 정규화(Third Normal Form)__
+원칙 : No transitive dependencies(이행적 종속성 제거)
+
+topic 테이블에서 **author_id 컬럼은 title 컬럼에 종속된다.** 또한 author_name, author_profile 컬럼은 author_id 컬럼에 의존하고 있다. 이러한 관계를 **이행적 종속성을 가진다고 말한다.**
+
+> 이행적 종속성을 가지고 있다면 중복이 발생하고 있다는 의미이다.
+
+__:seedling: 제 3 정규화(이행적 종속성 제거) 진행하기__
+먼저 중복이 발생하는 author_id, author_name, author_profile 컬럼을 따로 빼내 새로운 테이블을 만든다.
+
+> 이행적 종속성 때문에 발생하는 중복된 컬럼들을 따로 빼내 새로운 테이블을 만들고, 기존 테이블에 이행적 종속성을 유발시키는 컬럼은 남겨둔다.
+
+__topic Table__
+
+|<U>title</U>|description|created|author_id|
+|:---:|:---:|:---:|:---:|
+|MySQL|MySQL is ... |2011|1|
+|ORACLE|ORACLE is ... |2011|1|
+
+__author Table__
+
+|id|author_name|author_profile|
+|:---:|:---:|:---:|
+|1|kim|developer|
+
+## __제 3 정규화까지 마친 최종 테이블__
+
+__author Table__
+
+|id|author_name|author_profile|
+|:---:|:---:|:---:|
+|1|kim|developer|
+
+__topic Table__
+
+|<U>title</U>|description|created|author_id|
+|:---:|:---:|:---:|:---:|
+|MySQL|MySQL is ... |2011|1|
+|ORACLE|ORACLE is ... |2011|1|
+
+__topic_type Table__
+
+|title|type|price|
+|:---:|:---:|:---:|
+|MySQL|paper|10000|
+|MySQL|online|0|
+|ORACLE|online|0|
+
+__topic_tag_relation (Mapping Table)__
+
+|<U>topic_title</U>|<U>tag_id</U>|
+|:---:|:---:|
+|MySQL|1|
+|MySQL|2|
+|ORACLE|1|
+|ORACLE|3|
+
+__tag Table__
+
+|tag|name|
+|:---:|:---:|
+|1|rdb|
+|2|free|
+|3|commercial|
 
 # __물리적 데이터 모델링__
 어떤 데이터베이스를 사용할 것인지 생각하는 단계  
