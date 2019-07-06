@@ -416,3 +416,198 @@ __tag Table__
 # __물리적 데이터 모델링__
 어떤 데이터베이스를 사용할 것인지 생각하는 단계  
 표를 생성하는 SQL코드를 산출할 수 있다.
+
+> 이상적인 표를 구체적인 제품에 맞는 현실적인 표를 만드는 단계. (성능이 중요)
+
+일단 운영을 조금이라도 해보자. 데이터가 쌓이고 처리량이 많아져야 느려지는 부분의 분별이 생긴다. 이때 적당한 시점에서 **각 쿼리의 성능을 평가해보고 병목이 발생하는 지점을 집중적으로 해결을 해보자.** (find slow query - query를 실행할 때 느려지는 부분을 찾아보기)
+
+성능을 향상시키기 위한 여러가지 방법이 존재한다. 그 중 최후의 방법은 역정규화(denormalization)
+
+역 정규화 - 이상적으로 정규화 된 표의 구조를 손을 대는 것
+역 정규화는 혹독한 댓가를 치뤄야함. 이러한 댓가를 지불할만한 가치가 있는지를 먼저 살펴보고 다른 방법을 먼저 시도해보기.
+
+index - 행에 대한 읽기 성능을 비약적으로 향상시킨다. 대신 쓰기 성능을 비관적으로 희생시킨다. 왜냐하면 쓰기가 일어날 때 마다 그 행이 index가 걸려있다면 입력된 정보를 잘 정리정돈 하기 위한 복잡한 연산과정이 필요. 이 과정에서 시간이 오래 걸리고 저장 공간을 더 많이 차지한다. 하지만 잘 정리정돈 되면 빠르게 읽을 수 있기 때문에 사용
+
+application 영역에서 cache화 시키는 방법을 생각하는 것도 방법.
+
+## __역정규화란?__
+정규화를 통해 만든 이상적인 표를 성능이나 개발의 편의성을 위해 구조를 바꾸는 것.
+
+정규화는 쓰기의 편리함을 위해서 읽기의 성능을 희생하는 것이다. 왜냐하면 여러개의 표로 쪼개지기 때문에 JOIN을 사용해야 하는데 JOIN은 비싼 작업이기 때문이다. 이렇게 정규화 된 테이블에서 읽기가 자주 일어날 때 정규화로 인해서 성능이 느려지는 경우가 생기는데 이때 여러가지 방법을 사용해보고 그래도 성능이 향상되지 않는다면 최후의 수단으로 역정규화를 진행해보자.
+
+    생각해둘 것.
+
+    1. 정규화를 한 다음 역정규화를 진행하는 것이다.
+    2. 처음부터 정규화를 아예 하지 않은 표가 좋은거라고 할 수 없다.
+    3. 정규화를 한다고 해서 반드시 성능이 떨어지는 것도 아니다.
+
+정규화는 엄격한 규칙에 따라서 순차적으로 진행하는 것이지만, 역정규화는 규칙이 있는게 아니다. 그 상황에 맞는 역정규화를 진행하는데 여러 기법들이 있을 수 있고 자신이 생각하는 창의적인 방법을 생각해낼 수 있다. 아래서 진행하는 것들은 일종의 Sample과 같은 역할이다.
+
+## __컬럼의 역정규화 - 컬럼 중복 : JOIN 줄이기__
+topic_title에 대한 tag 이름을 가져와보기
+
+__topic_tag_relation__
+
+|<U>topic_title</U>|<U>tag_id</U>|
+|:---:|:---:|
+|MySQL|1|
+|MySQL|2|
+|ORACLE|1|
+|ORACLE|3|
+
+__tag Table__
+
+|tag|name|
+|:---:|:---:|
+|1|rdb|
+|2|free|
+|3|commercial|
+
+__:seedling: 역 정규화 전 JOIN을 통한 Query__
+```mysql
+SELCT tag.name
+FROM topic_tag_relation AS TTR
+LEFT JOIN tag
+ON TTR.tag_id = tag.id
+WHERE topic_id = 'MySQL';
+```
+
+비용이 많이 드는 방법인 JOIN을 사용함으로써 운영중인 서비스의 성능이 저하될 수 있다. 이때 선택할 수 있는 방법은 여러가지가 있지만 가장 이해하기 쉬운 방법은 topic_tag_relation 테이블의 tag의 name을 넣는 것이다. 즉, 중복을 허용하는 것이다. 중복을 허용하지만 JOIN을 사용하지 않기 때문에 훨씬 더 빠르게 데이터를 뽑아낼 수 있다는 장점이 있다.
+
+__역정규화를 거친 topic_tag_relation__
+
+|<U>topic_title</U>|<U>tag_id</U>|tag_name|
+|:---:|:---:|:---:|
+|MySQL|1|rdb|
+|MySQL|2|free|
+|ORACLE|1|rdb|
+|ORACLE|3|commercial|
+
+__:seedling: 역 정규화 후 JOIN이 없는 Query__
+```mysql
+SELCT tag.name
+FROM topic_tag_relation AS TTR
+LEFT JOIN tag
+ON TTR.tag_id = tag.id
+WHERE topic_id = 'MySQL';
+```
+
+정규화를 진행하기 전에 가지고 있던 문제점을 고스란히 가지게 된다. 또한 기존에 있던 tag 테이블은 그대로 있기 때문에 안좋은 상황이 된다. 역정규화를 하게 되면 시스템의 복잡도가 높아지게 된다.
+
+## __컬럼의 역정규화 - 파생 컬럼의 형성 : 계산작업을 줄이기__
+목표 : 각각의 저자가 몇개의 글을 작성했는지를 목록으로 표현한다.
+
+__author Table__
+
+|id|author_name|author_profile|
+|:---:|:---:|:---:|
+|1|kim|developer|
+
+__topic Table__
+
+|<U>title</U>|description|created|author_id|
+|:---:|:---:|:---:|:---:|
+|MySQL|MySQL is ... |2011|1|
+|ORACLE|ORACLE is ... |2012|1|
+|SQL SERVER|SQL SERVER is ... |2013|2|
+
+__:seedling: 역 정규화 전 Query__
+```mysql
+SELECT author_id COUNT(author_id)
+FROM topic
+GROUP BY author_id;
+```
+만약 위와 같은 작업을 굉장히 빈번한 작업이라면 GROUP BY가 비싼 작업이 될 수 있다. 이 점에 대해서 author 테이블에 각 저자가 몇개의 글을 가지고 있는지 나타내는 컬럼을 추가해 글을 추가할 때마다 1씩 증가시킬 수 있다.
+
+__역정규화를 거친 author 테이블__
+
+|id|author_name|author_profile|topic_count|
+|:---:|:---:|:---:|:---:|
+|1|kim|developer|2|
+
+__:seedling: 역 정규화 후 JOIN이 없는 Query__
+```mysql
+SELECT id, topic_count
+FROM author;
+```
+GROUP BY를 할 필요가 없기 때문에 훨씬 빠르게 데이터를 가져올 수 있다. 하지만 topic_count는 새로운 글이 작성 될 때마다 갱신시켜줘야 하는 비용이 발생하기 때문에 이 점에 대해서 고려해야 한다.
+
+## __컬럼의 역정규화 - 컬럼을 기준으로 테이블을 분리__
+
+만약 topic 테이블의 description의 용량이 굉장히 크고 description을 제외한 나머지 컬럼들을 조회하는 연산과 description을 포함해서 조회하는 연산이 양쪽 다 굉장히 빈번할 때 처리하는 방법.
+
+__:bulb: 역 정규화를 통해 테이블 쪼개기__
+description을 제외한 테이블, PrimaryKey와 description만을 가진 테이블 두 개로 쪼갠다.
+
+__:seedling: topic 테이블__
+
+|<U>title</U>|created|author_id|
+|:---:|:---:|:---:|
+|MySQL|2011|1|
+|ORACLE|2012|1|
+|SQL SERVER|2013|2|
+
+__:seedling: topic_description 테이블__
+
+|title|description|
+|:---:|:---:|
+|MySQL|MySQL is ... |
+|ORACLE|ORACLE is ... |
+|SQL SERVER|SQL SERVER is ... |
+
+이렇게 두 개의 테이블로 쪼갠다면 **용량이 큰 description 컬럼은 topic에 없기 때문에 여러가지 장점을 가지게 된다.** 만약 쪼갠 두 테이블의 사용이 매우 빈번하다면 두 테이블을 각 다른 컴퓨터에 저장해서 쓰기/읽기 작업을 시키면 컴퓨터 여러대로 분산할 수 있다. 이런 방법을 샤딩이라고 한다. 성능의 한계가 느껴졌을 때 여러대의 컴퓨터로 Scale out하는 기법 중 하나이다. 하지만 유지하기도 힘들고 어렵기 때문에 최후의 수단으로 사용하는 방법 중 하나이다.
+
+## __컬럼의 역정규화 - 행을 기준으로 테이블을 분리__
+만약 사용자가 많으면서 조회가 빈번하게 일어난다면 해당 테이블을 행을 기준으로 여러개로 나눈다. 예를 들어, author_id를 기준으로 1000번까지 저장되는 테이블을 만들고 2000번까지 저장되는 테이블을 만든다.
+
+__topic_1000 Table__
+
+|<U>title</U>|description|created|author_id|
+|:---:|:---:|:---:|:---:|
+|MySQL|MySQL is ... |2011|1|
+|ORACLE|ORACLE is ... |2012|1|
+|SQL SERVER|SQL SERVER is ... |2013|2|
+
+__topic_2000 Table__
+
+|<U>title</U>|description|created|author_id|
+|:---:|:---:|:---:|:---:|
+|SQL SERVER|SQL SERVER is ... |2013|1500|
+
+이렇게 테이블을 나눈 다면 author_id에 따라 query를 요청하는 서버를 달리하여 데이터 관리를 분산시킨다. 이렇게 한다면 각각의 물리적인 서버마다 서로다른 테이블을 저장하고 조회를 처리하는 것을 통해서 무한이 많은 처리량을 소화할 수 있다. 하지만 이렇게 처리한다면 사고 위험성도 높아질 뿐더러 노하우도 필요한 테크닉이기 때문에 궁지에 몰렸을 때 사용
+
+## __관계의 역정규화 - 지름길을 만든다__
+목표 : 저자의 태그 아이디와 태그명을 조회한다.
+
+topic_tag_relation, tag 두 테이블의 JOIN을 통해서 정보를 뽑아낼 수 있다. 하지만 두 테이블 만으로는 author_id 값을 가져올 수 없기 때문에 topic테이블도 함께 JOIN을 해야한다. 이 문제를 낮추기 위한 역정규화 방식.
+
+__:seedling: 역 정규화 전 Query__
+
+```mysql
+SELECT tag.id, tag.name
+FROM topic_tag_relation AS TTR
+LEFT JOIN tag ON TTR.tag_id = tag.id
+LEFT JOIN topic ON TTR.topic_title = topic.title
+WHERE author_id = 1;
+```
+
+__:bulb: 역 정규화를 통해 비용 줄이기__
+topic_tag_relation 테이블에 author_id 컬럼을 추가해서 조회할 수 있게 만들어 JOIN을 줄인다.
+
+__역 정규화를 거친 topic_tag_relation 테이블__
+
+|<U>topic_title</U>|<U>tag_id</U>|author_id|
+|:---:|:---:|:---:|
+|MySQL|1|1|
+|MySQL|2|1|
+|ORACLE|1|1|
+|ORACLE|3|1|
+
+__:seedling: 역 정규화 후 Query__
+
+```mysql
+SELECT tag.id, tag.name
+FROM topic_tag_relation AS TTR
+LEFT JOIN tag ON TTR.tag_id = tag.id
+WHERE author_id = 1;
+```
