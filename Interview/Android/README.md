@@ -28,3 +28,25 @@ Android 면접 질문
 ### Q. 안드로이드에서 Queue를 사용하는 것 예를 하나 들어보세요
 ### Q. 리사이클러뷰를 사용하는 이유에 대해서 설명하세요 뷰를 여러개 나열하면 되는데 굳이 사용하는 이유는??
 ### Q. Application class가 무엇인지 설명하세요
+### Q. A 액티비티에서 startActivity로 B액티비티를 호출하고 B 액티비티에서 뒤로가기 버튼을 눌렀을 때 두 액티비티에서 일어나는 생명주기에 대해 설명해보세요. (각 액티비티로 구분이 아닌 두 액티비티를 합쳐서 일어나는 과정을 통틀어 순서 설명)
+
+![Activity LifeCycle](./images/activity_lifecycle.png)
+출처 : [Google Android Developers](https://developer.android.com/guide/components/activities/activity-lifecycle)
+
+__실행 순서__
+
+__01. 앱 실행__
+
+A 액티비티 : onCreate -> onStart -> onResume
+
+__02. startActivity(Intent(A, B)) 실행__
+
+A 액티비티 : onPause
+B 액티비티 : onCreate -> onStart -> onResume
+A 액티비티 : onStop
+
+__03. B 액티비티에서 뒤로가기 버튼 클릭__
+
+B 액티비티 : onPause
+A 액티비티 : onRestart -> onStart -> onResume
+B 액티비티 : onStop -> onDestroy
