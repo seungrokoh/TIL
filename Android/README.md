@@ -6,10 +6,15 @@
 
 __:notebook: contents__
 
-### __:seedling: Room__ [[내용 보기]](https://github.com/seungrokoh/TIL/tree/master/Android/Room/README.md)
 
-* Room Basic - 룸에 대한 기본적인 내용 정리
+### __:seedling: Basic__ [[내용 보기]](https://github.com/seungrokoh/TIL/tree/master/Android/Basic/README.md)
+안드로이드 기본 개념에 대한 정리 공간 입니다.
+* Service Component
+
+### __:seedling: Room__ [[내용 보기]](https://github.com/seungrokoh/TIL/tree/master/Android/Room/README.md)
+룸에 대한 기본적인 내용 정리
+* Room Basic
 
 ### __:seedling: Dagger2__ [[내용 보기]](https://github.com/seungrokoh/TIL/tree/master/Android/Dagger2/README.md)
-
-* Dagger2 Basic - Dagger2에 대한 기본적인 내용 정리
+Dagger2에 대한 기본적인 내용 정리
+* Dagger2 Basic
