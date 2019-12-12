@@ -3,9 +3,9 @@
 Animation을 적용하다가 발생한 issue에 대해 정리하는 공간입니다.
 ***
 
-### __Issue 01 : Circular Reveal Animation 종료 후 화면 깜빡임__
+### __Issue 01 : Circular Reveal Animation 종료 후 화면 깜빡이는 현상__
 
-총 2개의 `Fragment`를 가지고 Circular Reveal Animation을 구현하다 __화면이 종료되고 깜빡이는 현상이 발생__ 하는 문제를 해결한 내용입니다.
+총 2개의 `Fragment`를 가지고 Circular Reveal Animation을 구현하다 __화면이 종료되고 깜빡이는 현상이 발생__ 하는 문제를 해결한 내용.
 
 `Fragment 1`이 띄워져 있는 상태에서 `Fragment 2`를 Circular Animation을 이용해 open하고 __다시 Circular Animation을 이용해 닫을 때 Animation이 종료되고 Fragment 2가 잠깐 보였다 사라지는 현상이 발생하였다.__ 매끄럽지 못한 화면 전환 때문에 거슬려 문제해결 방법을 찾던 도중 `fillAfter 속성`이 있다는 사실을 발견하고 해당 내용을 찾아보았다.
 
