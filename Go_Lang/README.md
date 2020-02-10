@@ -4,6 +4,7 @@
 # A Tour of Go
 
 * [Practice 23](#practice-23)
+* [Practice 36](#practice-36)
 ***
 
 ### Practice 23
@@ -34,4 +35,28 @@ func main() {
     fmt.Println(math.Sqrt(2))
 }
 
+```
+
+### Practice 36
+
+```go
+package main
+
+import "code.google.com/p/go-tour/pic"
+
+func Pic(dx, dy int) [][]uint8 {
+    var arr = make([][]uint8, dy)
+    for y := range arr {
+        arr[y] = make([]uint8, dx)
+
+        for x := range arr[y] {
+            arr[y][x] = uint8(x^y)   
+        }
+    }
+    return arr
+}
+
+func main() {
+    pic.Show(Pic)
+}
 ```
