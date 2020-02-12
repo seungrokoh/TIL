@@ -10,6 +10,7 @@
 * [슬라이스 용량](#슬라이스-용량)
 * [Practice 23](#practice-23)
 * [Practice 36](#practice-36)
+* [Practice 41](#practice-41)
 
 ### String과 Byte
 
@@ -275,4 +276,29 @@ func Pic(dx, dy int) [][]uint8 {
 func main() {
     pic.Show(Pic)
 }
+```
+
+### Practice 41
+
+```go
+package main
+
+import (
+    "code.google.com/p/go-tour/wc"
+    "strings"
+)
+
+func WordCount(s string) map[string]int {
+    wordMap := make(map[string]int)
+
+    for _, key := range strings.Fields(s) {
+        wordMap[key]++
+    }
+    return wordMap
+}
+
+func main() {
+    wc.Test(WordCount)
+}
+
 ```
