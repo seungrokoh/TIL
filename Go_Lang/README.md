@@ -11,6 +11,7 @@
 * [Practice 23](#practice-23)
 * [Practice 36](#practice-36)
 * [Practice 41](#practice-41)
+* [Practice 44](#practice-44)
 
 ### String과 Byte
 
@@ -348,4 +349,30 @@ func main() {
     wc.Test(WordCount)
 }
 
+```
+
+### Practice 44
+
+```go
+package main
+
+import "fmt"
+
+// fibonacci is a function that returns
+// a function that returns an int.
+func fibonacci() func() int {
+    num1, num2, temp:= 0, 1, 0
+    return func() int {
+        temp = num1
+        num2, num1 = num1 + num2, num2
+        return temp
+    }
+}
+
+func main() {
+    f := fibonacci()
+    for i := 0; i < 10; i++ {
+        fmt.Println(f())
+    }
+}
 ```
