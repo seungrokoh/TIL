@@ -12,6 +12,7 @@
 * [Practice 36](#practice-36)
 * [Practice 41](#practice-41)
 * [Practice 44](#practice-44)
+* [Practice 58](#practice-58)
 
 ### String과 Byte
 
@@ -374,5 +375,38 @@ func main() {
     for i := 0; i < 10; i++ {
         fmt.Println(f())
     }
+}
+```
+
+### Practice 58
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	http.Handle("/string", String("I'm a frayed knot."))
+	http.Handle("/struct", &Struct{"Hello", ":", "Gophers!"})
+	http.ListenAndServe("localhost:4000", nil)
+}
+
+type String string
+
+type Struct struct{
+	Greeting string
+	Punct string
+	Who string
+}
+
+func (s String) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, s)
+}
+
+func (s Struct) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, s.Greeting + s.Punct + s.Who)
 }
 ```
