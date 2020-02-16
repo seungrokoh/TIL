@@ -8,6 +8,13 @@
 * [슬라이스 자르기](#슬라이스-자르기)
 * [슬라이스 덧붙이기](#슬라이스-덧붙이기)
 * [슬라이스 용량](#슬라이스-용량)
+
+* [메서드](#메서드)
+* [포인터 리시버](#포인터-리시버)
+* [구조체](#구조체)
+* [const와 iota](#const와-iota)
+* [구조체 내장](#구조체-내장)
+
 * [Practice 23](#practice-23)
 * [Practice 36](#practice-36)
 * [Practice 41](#practice-41)
@@ -344,6 +351,187 @@ func (adjList *Graph) ReadFrom(r io.Reader) error
 * 소문자로 시작 할 경우 **다른 모듈에서 보이지 않는다. (호출 불가능)**
 
 > 공개된 요소들은 반드시 주석을 달도록 하자 (godoc이 문서를 만들어 준다)
+
+### **구조체**
+
+* 구조체 : 필드들의 모음 혹은 묶음을 말한다.
+
+:heavy_check_mark: **구조체 생성**
+```go
+type Task struct {
+    title string
+    done bool
+    due *time.Time
+}
+```
+:heavy_check_mark: **구조체 선언**
+```go
+var myTask Task
+
+or
+
+var myTask = Task{"laundry", false, nil}
+
+or
+
+var myTask = Task{title: "laundry"}
+
+or
+
+var myTask = Task{title: "laundry", done: true}
+```
+
+### const와 iota
+
+> 확장성을 위해서 bool형을 쓸 곳에 enum형을 쓰자
+
+Task의 done 필드가 bool 형으로 되어 있어 **할 일을 완료했다, 완료하지 못했다** 로 표시될 수 있다. **하지만** 현재 상황을 알지 못한다는 값을 추가한다고 한다면????
+
+bool로는 표현을 할 수 없을 뿐더러 **앞으로 더 많은 종류의 상태가 추가 될 가능성이 있기 때문에** done 필드를 **포인터 자료형으로 만들 수 있다.**
+
+```go
+type status int
+
+type Task struct {
+    title string
+    status status
+    due *time.Time
+}
+```
+
+> Go에는 enum이 따로 없고 상수로 정의해서 사용한다.
+
+```go
+const UNKNOWN status = 0
+const TODO status = 1
+const DONE status = 2
+```
+
+위의 세 가지 상수는 연관되어 있기 때문에 묶어서 쓸 수 있다.
+
+```go
+const (
+    UNKNOWN status = 0
+    TODO status = 1
+    DONE status = 2
+)
+```
+
+모두 동일한 타입이고 0, 1, 2 순서대로 증가하는 값을 일일히 다 써줘야 하는 노가다성을 없애기 위해서 **iota를 사용하자**
+
+```go
+const (
+    UNKNOWN status = iota
+    TODO
+    DONE
+)
+```
+
+> iota는 순서대로 0부터 증가한 값이 들어가며 자료형도 함께 들어간다
+
+### **구조체 내장**
+
+Golang에서 구조체의 특별한 점은 **여러 자료형의 필드를 가질 수 있다는 점** 이다.
+
+* 상속 : Is A 관계
+* 포함 : Has A 관계
+
+:bulb: **Go에서 포함관계 쉽게 활용하기**
+
+위의 예제에서 Deadline이라는 자료형을 만드는데 **마감 시간 필드 하나만 있는 구조체를 굳이 만들 필요가 없다.**
+
+> 명명된 자료형, 자료형에 이름을 붙여 메서드를 작성하면 된다.
+
+:heavy_check_mark: **Deadline자료형에 OverDue 메서드 정의**
+```go
+type Deadline time.Time
+
+// Deadline이 없는 경우를 위해 포인터 리시버로 정의
+func (d *Deadline) OverDue() bool {
+	return d != nil && time.Time(*d).Before(time.Now())
+}
+```
+
+:heavy_check_mark: **마감시간을 가진 Task 구조체 정의**
+```go
+type Task struct {
+	Title string
+	Status status
+	Deadline *Deadline
+}
+```
+
+:heavy_check_mark: **Task에 OverDue 메서드 정의**
+```go
+func (t Task) OverDue() bool {
+	return t.Deadline.OverDue()
+}
+```
+
+> Task의 OverDue 메서드는 그저 Deadline에 자기가 할 일을 위임할 뿐이다.
+
+Task 구조체가 **Deadline 자료형의 필드를 가지고 있어 메서드도 이용할 수 있다.** 하지만, 메서드마다 모두 같은 이름의 메서드를 호출하는 코드를 작성해야 하지만 **내장 기능을 이용한다면 이 귀찮음을 덜을 수 있다.**
+
+:heavy_check_mark: **내장 기능**
+```go
+type Task struct {
+    Title string
+    Status status
+    *Deadline
+}
+```
+필드의 이름을 생략하면 **Task에 대하여 의미없는 OverDue 메서드를 작성할 필요가 없다.** Task가 내장하고 있는 자료형(Deadline) 이름과 같은 필드를 가지게 되고 **정의되어 있는 메서드도 바로 호출할 수 있게 된다.**
+
+:bulb: **필드 내장의 문제점**
+필드가 내장되어 있으면 **내장된 필드가 구조체 전체의 직렬화 결과를 바꿔버리는 문제점이 있다.**
+
+:heavy_check_mark: **구조체 내장 예제**
+```go
+type status int
+
+type Deadline struct {
+	time.Time
+}
+
+func NewDeadline(t time.Time) *Deadline {
+	return &Deadline{t}
+}
+type Task struct {
+	Title string
+	Status status
+	Deadline *Deadline
+}
+
+type Address struct {
+	City string
+	State string
+}
+type Telephone struct {
+	Mobile string
+	Direct string
+}
+
+type Contact struct {
+	Address
+	Telephone
+}
+
+func main() {
+	var c Contact
+	c.Mobile = "123-456-789"
+	fmt.Println(c.Telephone.Mobile)
+	c.Address.City = "San Francisco"
+	c.State = "CA"
+	c.Direct = "N/A"
+	fmt.Println(c)
+}
+```
+
+> 구조체를 내장하게 되면 내장된 구조체에 들어있는 필드들도 바로 접근 가능하다.
+
+구조체 내장을 이용하면 **여러 구조체에 잇는 필드들이 모두 합쳐진 구조체 같은 것을 만들 수 있다.** 그렇다고 실제로 합쳐진 것은 아니고 **필드에 접근할 때 굳이 길게 쓸 필요가 없다는 뜻**
+
+> 상속과 같은 개념과는 달리 실제로는 내부에 필드로 내장하고 있으면서 편의를 제공해주는 것 뿐이다.
 
 ***
 
