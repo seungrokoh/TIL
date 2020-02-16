@@ -271,6 +271,80 @@ if n := copy(dest, src); n != len(src) {
 
 > copy 함수의 반환 값 : 실제로 복사된 원소의 개수
 
+
+### **메서드**
+
+__서브루틴__ : 코드의 덩어리를 만든 다음에 그것을 호출하고 반환할 수 있는 구조.
+__메서드__ : 서브루틴에 **리시버가 붙은 것**
+
+:heavy_check_mark: 메서드 작성법
+```go
+func (recv T) MethodName(p1 T1, p2 T2) R1
+```
+메서드 안에서 recv를 사용할 수 있고, **recv에 담겨 있는 자료에 대한 연산들을 메서드로 정의할 수 있다.**
+
+:heavy_check_mark: 문자열 다중 집합
+```go
+type MultiSet map[string]int
+
+func (m MultiSet) Insert(val string) {
+	m[val]++
+}
+
+func (m MultiSet) Erase(val string) {
+	if m[val] <= 1 {
+		delete(m, val)
+	} else {
+		m[val]--
+	}
+}
+
+func (m MultiSet) Count(val string) int {
+	return m[val]
+}
+
+func (m MultiSet) String() string {
+	s := "{ "
+	for val, count := range m {
+		s += strings.Repeat(val + " ", count)
+	}
+	return s + "}"
+}
+```
+
+> 메서드를 활용하면 자료 추상화를 할 수 있다.
+
+단지 map[string]int에 지나지 않았던 자료형에 이름을 붙여 MultiSet이라는 추상 자료형을 만들었다. 이렇게 함으로써 **철저히 MultiSet에 집중하여 이 자료를 다루는 메소드들을 정의할 수 있다.** (코틀린 Extension이랑 비슷한건가..?)
+
+### **포인터 리시버**
+
+* 포인터 리시버 : 자료형이 포인터인 리시버
+
+리시버 역시 다른 함수들과 마찬가지로 **값으로 전달** 된다. 따라서 **포인터로 전달해야 할 경우에는 포인터 리시버를 사용해야 한다.**
+
+:heavy_check_mark: 인접리스트 읽고 쓰기 기본형
+```go
+adjList [][]int
+
+func WriteTo(w io.Writer, adjList [][]int) error
+func ReadFrom(r io.Reader, adjList *[][]int) error
+```
+
+:heavy_check_mark: 인접리스트 읽고 쓰기 포인터 리시버
+```go
+type Graph [][]int
+
+func (adjList Graph) WriteTo(w io.Writer) error
+func (adjList *Graph) ReadFrom(r io.Reader) error
+```
+
+### **공개 및 비공개**
+
+* 대문자로 시작 할 경우 **다른 모듈에서 보일 수 있다. (호출 가능)**
+* 소문자로 시작 할 경우 **다른 모듈에서 보이지 않는다. (호출 불가능)**
+
+> 공개된 요소들은 반드시 주석을 달도록 하자 (godoc이 문서를 만들어 준다)
+
 ***
 
 ### Practice 23
