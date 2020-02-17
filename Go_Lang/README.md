@@ -8,13 +8,15 @@
 * [슬라이스 자르기](#슬라이스-자르기)
 * [슬라이스 덧붙이기](#슬라이스-덧붙이기)
 * [슬라이스 용량](#슬라이스-용량)
-
+***
+* [함수](#함수)
+* [값으로 취급되는 함수](#값으로-취급되는-함수)
 * [메서드](#메서드)
 * [포인터 리시버](#포인터-리시버)
 * [구조체](#구조체)
 * [const와 iota](#const와-iota)
 * [구조체 내장](#구조체-내장)
-
+***
 * [Practice 23](#practice-23)
 * [Practice 36](#practice-36)
 * [Practice 41](#practice-41)
@@ -278,6 +280,109 @@ if n := copy(dest, src); n != len(src) {
 
 > copy 함수의 반환 값 : 실제로 복사된 원소의 개수
 
+### **함수**
+
+:heavy_check_mark: 둘 이상의 반환 값 정의
+```go
+func WriteTo(w io.Writer, lines []string) (int64, error) {
+    // body ...
+    return n, err
+}
+```
+Go 에서 함수는 **둘 이상의 반환값을 둘 수 있다.**  
+만약 위의 함수에서 `n`의 값은 버리고 `err`만 반환받고 싶을 땐 `_ (under-bar)`를 사용하면 된다.
+
+:heavy_check_mark: 선택적으로 return 값 받기
+```go
+_, err := WriteTo(w, lines)
+```
+
+> Golang에서는 관례상 에러는 가장 마지막 값으로 반환한다.
+
+:heavy_check_mark: 조건문에서 error 사용하기
+```go
+if err := MyFunc(); err != nil {
+    // Something ...
+}
+```
+
+조건문 안에서 변수를 새로 만들고 **조건문 안에서만 사용할 수 있다.**
+
+:heavy_check_mark: 상위 호출자에게 에러 떠넘기기
+```go
+if err := MyFunc(); err != nil {
+    return nil, err
+}
+```
+
+예외는 **발생한 곳과 처리할 수 있는 곳이 다른 경우가 많다.** 함수를 호출한 함수나 그 함수를 호출한 더 상위의 함수는 **제대로 입력하라는 메세지와 함께 다시 입력을 받거나 하는 등의 처리를 할 수 있다.**
+
+Go에서의 방식은 **예외를 현재 문맥에서 처리할 수 없을 때에는 해당 에러를 그대로 반환할 수 있다.**
+
+:heavy_check_mark: 새로운 에러 생성하기
+```go
+return errors.New("stringlist.ReadFrom: line is too long")
+return fmt.Errorf("stringlist: too long line at %d", count)
+```
+
+> 가장 단순한 에러 생성 방법은 "문자열 메세지를 주는 방법이다."
+
+:heavy_check_mark: 가변 인자
+```go
+func WriteTo(w io.Writer, lines... string) (n int64, err error)
+
+// use
+WriteTo(w, "hello", "world", "Go language")
+```
+
+:heavy_check_mark: 슬라이스 가변인자로 넘기기
+```go
+lines := []string{"hello", "world", "Go language"}
+WriteTo(w, lines...)
+```
+
+### **값으로 취급되는 함수**
+Golang에서 함수는 **일급 시민( First-class citizen )으로 분류된다.** 일급 시민으로 분류된다는 뜻은 **값으로 변수에 담길 수 있고, 다른 함수로 넘기거나 돌려받을 수 있다는 뜻이다.**
+
+:heavy_check_mark: 함수 리터럴
+```go
+func(a, b int) int {
+    return a + b
+}
+```
+
+**함수 리터럴( Function literal)은** 함수명이 없이 순수 return값을 가진 것. 이를 **익명 함수** 라고도 부른다.
+
+> 일반적인 함수에서 함수 이름이 함수의 값을 담는 변수라고 생각해보자
+
+:heavy_check_mark: 함수 리터럴 이해하기
+```go
+// 일반적인 함수
+func printHello() {
+    fmt.Println("Hello!")
+}
+```
+위의 함수에서 **이름을 없애고 함수 리터럴만 남기기**
+```go
+func FunctionLiteral() {
+    func() {
+        fmt.Println("Hello!")
+    }()
+}
+```
+> 함수 리터럴을 작성하고 마지막에 '()'이 해당 함수를 호출한 것이다.
+
+위의 코드가 이해가 가지 않는다면 아래 코드를 보면 이해하기 쉽다.
+
+```go
+func FunctionLiteral() {
+    printHello := func() {
+        fmt.Println("Hello!")
+    }
+    printHello()
+}
+```
+> 함수 리터럴을 printHello 변수에 담고 해당 함수 리터럴을 호출하는 모양이 같다
 
 ### **메서드**
 
