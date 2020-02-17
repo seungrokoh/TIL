@@ -11,6 +11,8 @@
 ***
 * [함수](#함수)
 * [값으로 취급되는 함수](#값으로-취급되는-함수)
+* [고차 함수 (higher-order function)](#고차-함수))
+* [클로저](#클로저)
 * [메서드](#메서드)
 * [포인터 리시버](#포인터-리시버)
 * [구조체](#구조체)
@@ -384,6 +386,79 @@ func FunctionLiteral() {
 ```
 > 함수 리터럴을 printHello 변수에 담고 해당 함수 리터럴을 호출하는 모양이 같다
 
+### **고차 함수**
+
+> 함수를 넘기고 받기만 하면 고차 함수이다.
+
+:bulb: 고계 함수 이해하기
+기존에 만들어 놓은 함수를 변형해가면 이해해보기
+
+:heavy_check_mark: 기존 ReadFrom 함수
+```go
+func ReadFrom(r io.Reader, lines *[]string) error {
+    scanner := bufio.NewScanner(r)
+    for scanner.Scan() {
+        *lines = append(*lines, scanner.Text())
+    }
+    if err := scanner.Err(); err != nil {
+        return err
+    }
+    return nil
+}
+```
+위 함수는 파일을 읽어 **무조건 슬라이스에만 추가할 수 있다.** 만약, 맵에 추가하거나, 네트워크를 통하여 데이터를 보내고 싶을땐?? **함수를 추가적으로 생성할 수는 있다.** 하지만 그렇기엔 비용이 너무 많이 든다.
+
+> 이런 상황에서 고차 함수를 사용해보자
+
+:heavy_check_mark: 고차 함수를 이용해 ReadFrom 함수 변경
+```go
+func ReadFrom(r io.Reader, f func(line string)) error {
+    scanner := bufio.NewScanner(r)
+    for scanner.Scan() {
+        f(scanner.Text())
+    }
+    if err := scanner.Err(); err != nil {
+        return err
+    }
+    return nil
+}
+```
+위와 같이 `고차 함수(higher-order function)`을 이용하면 **호출자가 자유롭게 원하는 동작을 지시할 수 있게 된다.**
+
+:heavy_check_mark: 고차 함수를 이용해 호출자가 동작 지시
+```go
+func HigherOrderFunction() {
+    r := strings.NewReader("bill\ntom\njane\n")
+    err := ReadFrom(r, func(line string) {
+        fmt.Println("(", line, ")")
+    })
+    if err != nil {
+        fmt.Println(err)
+    }
+}
+```
+
+### **클로저**
+클로저란 **외부에서 선언한 변수**를 **함수 리터럴 내에서 마음대로 접근**할 수 있는 코드를 의미
+
+위의 예제에서 **바로 출력하지 않고 슬라이스에 저장하는 코드로 변경했을 때**
+
+:heavy_check_mark: 파일 읽고 슬라이스에 저장하기 (클로저 사용)
+```go
+func HigherOrderFunction() {
+    r := strings.NewReader("bill\ntom\njane\n")
+    var lines []string
+    err := ReadFrom(r, func(line string) {
+        lines = append(lines, line)
+    })
+    if err != nil {
+        fmt.Println(err)
+    }
+}
+```
+위 예제에서 보면 3번째 라인에 선언한 lines 슬라이스를 **ReadFrom에 넘겨주는 함수 리터럴에서 사용하고 있다.**
+
+> ReadFrom에 넘기는 함수는 그 함수가 이용하는 변수들도 함께 가지고 간다.
 ### **메서드**
 
 __서브루틴__ : 코드의 덩어리를 만든 다음에 그것을 호출하고 반환할 수 있는 구조.
