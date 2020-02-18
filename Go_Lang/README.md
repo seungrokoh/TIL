@@ -13,6 +13,9 @@
 * [값으로 취급되는 함수](#값으로-취급되는-함수)
 * [고차 함수 (higher-order function)](#고차-함수))
 * [클로저](#클로저)
+* [명명된 자료형](#명명된-자료형)
+* [인자 고정](#인자-고정)
+* [패턴의 추상화](#패턴의-추상화)s
 * [메서드](#메서드)
 * [포인터 리시버](#포인터-리시버)
 * [구조체](#구조체)
@@ -459,6 +462,207 @@ func HigherOrderFunction() {
 위 예제에서 보면 3번째 라인에 선언한 lines 슬라이스를 **ReadFrom에 넘겨주는 함수 리터럴에서 사용하고 있다.**
 
 > ReadFrom에 넘기는 함수는 그 함수가 이용하는 변수들도 함께 가지고 간다.
+
+:heavy_check_mark: 클로저를 이용한 생성기
+```go
+func NewIntGenerator() func() int {
+    var next int
+    return func() int {
+        next++
+        return next
+    }
+}
+
+func NewIntGeneratorMultiple() {
+    gen1 := NewIntGenerator()
+    gen2 := NewIntGenerator()
+    fmt.Println(gen1(), gen1(), gen1())
+    fmt.Println(gen2(), gen2(), gen2(), gen2(), gen2())
+    fmt.Println(gen1(), gen1(), gen1(), gen1())
+}
+
+// Output
+1 2 3
+1 2 3 4 5
+4 5 6 7
+```
+
+> 같은 방식으로 Lazy evaluation을 구현하거나 무한한 크기의 자료구조를 만들 수 있다.
+
+### **명명된 자료형**
+**명명된 자료형( Named Type )이란** 자료형에 **새로 이름을 붙일 수 있는 것을 말한다.**
+
+:heavy_check_mark: 명명된 자료형
+```go
+// 명명된 자료형
+type rune int32
+
+// 명명되지 않은 자료형
+type runes []rune
+type MyFunc func() int
+```
+* `runes, MyFunc`와 같이 **이름 자체만으로 자료형을 지칭하는 것** 은 명명된 자료형
+* `[]rune, func() int`와 같이 **이름만으로 자료형을 지칭하는게 아닌 것** 은 명명되지 않은 자료형
+
+:bulb: **자료형에 붙이면 좋은점?**
+자료형 검사를 함으로써 프로그램을 직접 수행해보기 전에 **컴파일 시점에서 버그를 어느정도 예방할 수 있다.**
+
+### **인자 고정**
+:heavy_check_mark: 단계를 거쳐 변형 시킬 기본 함수
+```go
+type MultiSet map[string]int
+type SetOp func(m MultiSet, val string)
+// Insert 함수는 집합에 val을 추가한다.
+func Insert(m MultiSet, val string)
+```
+위 예제 중 [고차함수](#고차-함수)에서 만들었던 ReadFrom에 이 함수를 사용해 지정된 MultiSet을 각 줄에 넣기.
+
+:heavy_check_mark: ReadFrom 함수에 넣기
+```go
+m := NewMultiSet()
+ReadFrom(r, func(line string) {
+    Insert(m, line)
+})
+```
+r에서 읽어서 매 줄을 MultiSet에 추가해주는 코드로 변경되었다. **이번에는 함수의 형태를 추상화 시키기**
+
+:heavy_check_mark: 함수 추상화
+```go
+func InsertFunc(m MultiSet) func(val string) {
+    return func(val string) {
+        Insert(m, val)
+    }
+}
+```
+:heavy_check_mark: 추상화 이후 호출부의 단순화
+```go
+m := NewMultiSet()
+ReadFrom(r, InsertFunc(m))
+```
+:heavy_check_mark: 조금 더 일반화 시키기
+```go
+func BindMap(f SetOp, m MultiSet) func(val string) {
+    return func(val string) {
+        f(m, val)
+    }
+}
+```
+:heavy_check_mark: 일반화 이후 호출
+```go
+m := NewMultiSet()
+ReadFrom(r, BindMap(Insert, m))
+```
+> 마치 Insert 함수의 첫 인자인 m을 고정한 함수를 이용하는 것처럼 사용할 수 있다.
+
+### **패턴의 추상화**
+:heavy_check_mark: 기본 생성기
+```go
+func NewIntGenerator() func() int {
+    var next int
+    return func() int {
+        next++
+        return next
+    }
+}
+```
+위 생성기를 이용하여 `NewVertexIDGenerator, NewEdgeIDGenerator`등 동일한 패턴의 생성기를 만들고자 할 때 **패턴의 추상화를 이용할 수 있다.**
+
+> 동일한 패턴이 있다면 추상화할 수 있다.
+
+:heavy_check_mark: 정점 ID 생성기
+```go
+func NewVertexIDGenerator() func() VertexID {
+    var next int
+    return func() VertextID {
+        next++
+        return VertextID(next)
+    }
+}
+```
+`정점 ID 생성기`가 기본 생성기와 다른점은 **VertexID로 형변환 하는 것밖에 없다.** 즉, **추상화가 가능하다.**
+
+:heavy_check_mark: 코드 재사용으로 NewVertexIDGenerator 수정
+```go
+func NewVertexIDGenerator() func() VertexID {
+    gen := NewIntGenerator()
+    return func() VertexID {
+        return VertexID(gen())
+    }
+}
+```
+
+:bulb: 패턴의 추상화 심화 예제
+SICP의 1장 3절에 나와있는 예제 코드
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Func func(float64) float64
+type Transform func(Func) Func
+
+const tolerance = 0.00001
+const dx = 0.00001
+
+func Square(x float64) float64 {
+	return x * x
+}
+
+func FixedPoint(f Func, firstGuess float64) float64 {
+	closeEnough := func(v1, v2 float64) bool {
+		return math.Abs(v1 - v2) < tolerance
+	}
+	var try Func
+	try = func(guess float64) float64 {
+		next := f(guess)
+		if closeEnough(guess, next) {
+			return next
+		} else {
+			return try(next)
+		}
+	}
+	return try(firstGuess)
+}
+
+func FixedPointOfTransform(g Func, transform Transform, guess float64) float64 {
+	return FixedPoint(transform(g), guess)
+}
+
+func Deriv(g Func) Func {
+	return func(x float64) float64 {
+		return (g(x + dx) - g(x)) / dx
+	}
+}
+
+func NewtonTransform(g Func) Func {
+	return func(x float64) float64 {
+		return x - (g(x) / Deriv(g)(x))
+	}
+}
+
+func Sqrt(x float64) float64 {
+	return FixedPointOfTransform(
+		func(y float64) float64 {return Square(y) - x},
+		NewtonTransform,
+		1.0,
+		)
+}
+
+func main() {
+	fmt.Println(Sqrt(2))
+}
+```
+
+* **FixedPoint 함수는** 어떤 함수 f를 계속해서 적용했을 때, 어떤 값으로 수렴하는 경우에 그 수렴값을 찾는 함수이다. f(x), f(f(x)), f(f(f(x))), ... 이런식으로 계속 적용하니 어느 한 곳으로 수렴할 때 그 값을 찾는 것이다.
+
+> 과도한 추상화 사용으로 코드를 읽기 어렵게 만드는 일은 피하자.
+
+> 같은 패턴이 자주 반복되는 경우에 추상화를 시키면 버그를 줄이고 더 이해하기 쉬워진다.
+
 ### **메서드**
 
 __서브루틴__ : 코드의 덩어리를 만든 다음에 그것을 호출하고 반환할 수 있는 구조.
